@@ -1,0 +1,35 @@
+{% extends "index.html" %} {% block layout %}
+<div id="main-div" class="is-flex is-flex-direction-row m-3">
+  <!-- <div hx-get="/menu" hx-swap="outerHTML" hx-trigger="load"></div> -->
+
+  {% match path_and_params %}
+  {% when Some with ((path, params)) %}
+  <div
+    hidden
+    hx-push-url="true"
+    hx-target="#route-content"
+    hx-get="{{ path }}?{{ params }}"
+    hx-swap="innerHTML"
+    hx-trigger="load once"
+  ></div>
+  {% when None %}
+  <div
+      class="is-flex is-flex-direction-column">
+      <h1 class="is-align-self-center">
+          Please pick an environment
+      </h1>
+      {% match environment_names %}
+      {% when Some with (env_names) %}
+      <ul>
+          {% for name in env_names %}
+          <li hx-get="{{name}}" hx-target="#main-div" hx-push-url="true" hx-swap="innerHTML">{{name}}</li>
+      {% endfor %}
+      </ul>
+      {% when None %}
+      <h1> You have no environments </h1>
+      {% endmatch %}
+  </div>
+{% endmatch %}
+  <div id="route-content" class="container is-fluid"></div>
+</div>
+{% endblock %}

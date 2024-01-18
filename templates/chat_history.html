@@ -1,0 +1,50 @@
+<style>
+  .ws-message {
+    color: white;
+    text-shadow: 0 0 3px #c8c8c8;
+  }
+
+  .system-message {
+    color: yellow;
+  }
+
+  .user-message:empty::before {
+    content: none;
+  }
+
+  .user-message::before {
+    content: "USER: ";
+    text-shadow: none;
+    color: grey;
+  }
+
+  .assistant-message::before {
+    content: "AI: ";
+    text-shadow: none;
+    color: grey;
+  }
+
+  .assistant-message:empty::before {
+    content: none;
+  }
+
+  .system-message::before {
+    content: "SYSTEM: ";
+    text-shadow: none;
+    color: grey;
+  }
+
+  md-block {
+    white-space: pre;
+    font-family: monospace;
+  }
+</style>
+
+{% for message in messages %}
+<h1 class="p-1 ws-message {{message.class}}">{{message.content}}</h1>
+{% match message.markdown %} {% when Some with (md) %}
+<md-block>{{md}}</md-block>
+{% when None %} {% endmatch %} {% endfor %}
+
+<h1 id='"user-message"' class="p-1 ws-message user-message"></h1>
+<h1 id='"assistant-message"' class="p-1 ws-message assistant-message"></h1>

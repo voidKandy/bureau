@@ -1,0 +1,21 @@
+<div class="is-flex is-flex-direction-column">
+  <h1>You are currently in the {{ id }} environment</h1>
+  <div class="is-flex is-flex-direction-row is-justify-content-space-between">
+    <div>
+      <h1>Agents:</h1>
+      {% for a_name in agent_names %}
+      <h2
+        hx-get="{{id}}/{{a_name}}"
+        hx-replace-url="true"
+        hx-target="#main-div"
+        hx-swap="innerHTML"
+      >
+        {{a_name}}
+      </h2>
+      {% endfor %}
+    </div>
+    <div class="is-justify-self-flex-end">
+      <h1>Notifications:</h1>
+    </div>
+  </div>
+</div>

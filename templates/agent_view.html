@@ -1,0 +1,36 @@
+<div
+  id="ws-connect"
+  class="chat-window py-2 pl-2 pr-5"
+  hx-ext="ws"
+  ws-connect="/ws"
+  _="on htmx:wsAfterMessage send getHistory to #chat-history end"
+>
+  <div class="container">
+    <div
+      id="chat-history"
+      hx-get="/{{parent_id}}/{{id}}/history"
+      hx-trigger="load, getHistory"
+      hx-swap="innerHTML"
+      hx-target="this"
+    ></div>
+  </div>
+
+  <form
+    autocomplete="off"
+    ws-send=""
+    id="user-input-form"
+    name="{{parent_id}}-{{ id }}-agent-form"
+    class="chat-form is-align-self-center is-flex is-flex-direction-row is-justify-content-center is-flex-shrink"
+    hx-swap="none"
+    hx-on="htmx:wsAfterSend: this.reset()"
+  >
+    <input
+      class="input mx-2 mb-2 px-4 is-flex"
+      type="text"
+      name="user_input"
+      placeholder="Type a message..."
+      _="on load focus() me end"
+    />
+    <button class="basic-button button is-flex mr-2">▶︎</button>
+  </form>
+</div>

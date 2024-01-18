@@ -1,0 +1,114 @@
+@font-face {
+  font-family: "nova-mono";
+  src: url("/static/nova_mono/NovaMono-Regular.ttf") format("truetype");
+  /* You can also include additional font formats for better browser compatibility */
+}
+
+@font-face {
+  font-family: "space-mono";
+  src: url("/static/space_mono/SpaceMono-Regular.ttf") format("truetype");
+  /* You can also include additional font formats for better browser compatibility */
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 100,
+    "GRAD" 20,
+    "opsz" 20;
+}
+
+html,
+body {
+  background-color: #191919;
+  font-family: "space-mono", sans-serif;
+  /* background-image: radial-gradient(rgba(41, 0, 111, 0.75), black 120%); */
+  min-height: 100vh;
+  overflow-y: hidden;
+}
+
+::selection {
+  background: rgba(41, 0, 111, 0.75);
+  text-shadow: none;
+}
+
+.fancy-font {
+  font-family: "nova-mono", sans-serif;
+}
+
+#user-input-form input::placeholder {
+  font-family: "space-mono", sans-serif;
+}
+
+.nav-button {
+  font-family: "nova-mono", sans-serif;
+  border-radius: 0px;
+  border-style: none;
+  display: inline-block;
+  padding: 2px;
+  cursor: pointer !important;
+  font-size: 3rem;
+  background-color: #191919;
+  color: white;
+  transition: all ease-in-out 200ms;
+}
+
+.nav-button:hover {
+  border-radius: 1px;
+  background-color: white;
+  color: #191919;
+}
+
+.basic-button {
+  border-radius: 0px;
+  cursor: pointer !important;
+  background-color: #191919;
+  border-style: dashed;
+  color: white;
+  transition: all ease-in-out 200ms;
+}
+
+.basic-button:hover {
+  border-radius: 4px;
+  color: #191919;
+  background-color: white;
+  border-style: solid;
+  border-color: #191919;
+}
+
+.basic-button.clicked {
+  border-radius: 4px;
+  color: #191919;
+  background-color: white;
+  border-style: solid !important;
+  border-color: #191919;
+}
+
+.chat-form {
+  position: fixed;
+  bottom: 0;
+  width: 40vw;
+}
+
+.chat-form input[type="text"] {
+  background-color: #191919 !important;
+  border-style: dashed;
+  border-radius: 2px;
+  color: white;
+}
+
+.chat-form input[type="text"]:focus {
+  border-style: solid;
+  border-color: white;
+}
+
+.chat-form input[type="text"]::placeholder {
+  color: #3a3a3a;
+}
+
+.chat-window {
+  height: auto;
+  /* Set a fixed height for the chat window */
+  overflow-y: auto;
+  /* Enable vertical scrolling */
+}
