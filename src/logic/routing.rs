@@ -1,11 +1,13 @@
 use super::websocket as ws;
 use crate::{
+    patches,
     // data_controllers,
     views::{self, models::LayoutTemplate},
     SharedState,
 };
 
 use askama::Template;
+use axum::extract::{Path, Query};
 use axum::{
     http::Request,
     middleware::{self, Next},
@@ -32,8 +34,12 @@ pub fn main_router() -> Router<SharedState> {
 fn init_env_routes() -> Router<SharedState> {
     Router::new()
         .route("/", get(views::partials::env_view))
-        .route("/:agent_id/history", get(views::partials::history))
         .route("/:agent_id", get(views::partials::agent_view))
+        .route("/:agent_id/history", get(views::partials::history))
+        .route(
+            "/:agent_id/message_change/:role/:content",
+            patch(patches::message_change),
+        )
 }
 
 fn init_ws_routes() -> Router<SharedState> {

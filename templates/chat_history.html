@@ -38,10 +38,122 @@
     white-space: pre;
     font-family: monospace;
   }
+
+  .edit-button {
+    background-color: transparent;
+    color: white;
+    border: none;
+  }
+
+  .edit-button.off {
+    color: #1c1c1c;
+    cursor: default;
+  }
+
+  .edit-button.off:hover {
+    color: #1c1c1c;
+    cursor: default;
+  }
+
+  .edit-button:hover {
+    color: yellow;
+    cursor: pointer;
+  }
 </style>
 
+<script type="text/hyperscript">
+  behavior ShowEditOnHover
+      on load
+          add .off to <button/> in me
+          add @disabled to <button/> in me
+      end
+      on mouseenter
+          remove .off from <button/> in me
+          remove @disabled from <button/> in me
+      end
+      on mouseleave
+          add .off to <button/> in me
+          add @disabled to <button/> in me
+      end
+  end
+</script>
+
 {% for message in messages %}
-<h1 class="p-1 ws-message {{message.class}}">{{message.content}}</h1>
+
+<script type="text/hyperscript">
+  behavior MakeMessageEditable
+      init
+          set :editable to true
+          set :content to my textContent
+          send toggle to me
+      end
+      on keydown(event)
+          if event.key == 'Enter'
+            send blur to me
+            send changeMessage to me
+          end
+      end
+      on keyup(event)
+          set :content to my textContent
+          log :content
+      end
+      on toggle
+          if :editable
+            send makeUneditable to me
+          else
+            send makeEditable to me
+          end
+      end
+      on makeUneditable
+          add @contenteditable='false'
+          set :editable to false
+          if :content is not equal to my textContent
+      end
+      on makeEditable
+          add @contenteditable='true'
+          set :editable to true
+      end
+      on click
+        send makeEditable to me
+      end
+      on blur
+        send makeUneditable to me
+      end
+
+      on fetch:beforeRequest(headers)
+        set headers['Hx-Request'] to true
+      end
+      on changeMessage
+        fetch `/{{env_id}}/{{agent_id}}/message_change/{{message.role()}}/{{message.content}}?change=${:content}` with method:"PATCH"
+        put the result into innerHTML of next <h3/>
+        wait 3s then
+        put "" into innerHTML of next <h3/>
+      end
+</script>
+
+<script type="text/hyperscript"></script>
+<div
+  class="is-flex is-flex-direction-row is-justify-content-space-between"
+  _="install ShowEditOnHover"
+>
+  <h1 class="p-1 ws-message {{message.class}}" _="install MakeMessageEditable">
+    {{message.content}}
+  </h1>
+  <div class="is-flex is-flex-direction-row">
+    <h3 style="color: orange" class="is-size-7 is-align-self-center"></h3>
+    <button
+      class="edit-button material-symbols-outlined is-size-4 has-text-weight-bold is-align-self-center"
+      hx-patch="/{{env_id}}/{{agent_id}}/message_change/{{message.role()}}/{{message.content}}?delete=true"
+      hx-target="previous <h3/>"
+      _="on htmx:afterRequest 
+            wait 3s then
+            reload() the location of the window
+          end"
+    >
+      close
+    </button>
+  </div>
+</div>
 {% match message.markdown %} {% when Some with (md) %}
 <md-block>{{md}}</md-block>
 {% when None %} {% endmatch %} {% endfor %}

@@ -11,6 +11,7 @@ use nom::{
     IResult,
 };
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Template)]
 #[template(path = "index.html")]
@@ -42,6 +43,8 @@ pub struct AgentView<'a> {
 #[derive(Template)]
 #[template(path = "chat_history.html")]
 pub struct ChatHistory {
+    pub env_id: String,
+    pub agent_id: String,
     pub messages: Vec<MessageRender>,
 }
 
@@ -52,23 +55,23 @@ pub struct MessageRender {
     pub markdown: Option<String>,
 }
 
-impl TryFrom<&EnvNotification> for ChatHistory {
-    type Error = anyhow::Error;
-    fn try_from(noti: &EnvNotification) -> Result<Self, Self::Error> {
-        if let EnvNotification::AgentStateUpdate { cache, .. } = noti {
-            let messages: Vec<MessageRender> = cache.as_ref().iter().map(|m| m.into()).collect();
-            return Ok(ChatHistory { messages });
-        }
-        Err(anyhow!("Wrong type of notification"))
-    }
-}
-
 impl Into<Message> for MessageRender {
     fn into(self) -> Message {
         match self.class.as_str() {
             "user-message" => Message::new_user(&self.content),
             "assistant-message" => Message::new_assistant(&self.content),
             "system-message" => Message::new_system(&self.content),
+            _ => unreachable!(),
+        }
+    }
+}
+
+impl MessageRender {
+    fn role(&self) -> &str {
+        match self.class.as_str() {
+            "user-message" => "user",
+            "assistant-message" => "assistant",
+            "system-message" => "system",
             _ => unreachable!(),
         }
     }

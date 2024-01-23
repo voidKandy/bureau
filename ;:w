@@ -1,0 +1,50 @@
+use std::collections::HashMap;
+
+use askama::Template;
+use axum::{
+    extract::{Path, Query, State},
+    response::Html,
+};
+use axum_htmx::HxCurrentUrl;
+use espionox::environment::agent::memory::{MessageRole, Message, MessageMetadata};
+
+use crate::SharedState;
+
+pub async fn message_change(
+    State(state): State<SharedState>,
+    Query(params): Query<HashMap<String, String>>, // State(state): State<SharedState>,
+) -> Html<String> {
+    let state_write = state.write().await;
+        if let Some(env) = match params.get("env") {
+            Some(env_id) => state_write.environments_map.get(env_id),
+            None => None
+        } {
+
+            if let Some(agent) = match params.get("agent") {
+                Some(agent_id) => env.dispatch.write().await.get_agent_mut(agent_id).ok(),
+                None => None,
+            } {
+                if let Some(message) = {
+
+                    let role = params.get("role");
+                    let content = params.get("content");
+                    match (role, content) {
+                        (Some(role), Some(content)) => {
+                           if let Some(role) =  MessageRole::try_from(role.to_owned()) {
+                               match role {
+                                   Some(Message { role, content, metadata: MessageMetadata::default() })
+
+                               }
+                            }
+                        }   
+                    }
+                }
+                {}
+
+            
+            }
+        } 
+    let m = format!("PARAMS: {:?}/n", params);
+    if let Some()
+    Html(m)
+}

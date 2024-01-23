@@ -1,9 +1,18 @@
 {% extends "index.html" %} {% block layout %}
-<div id="main-div" class="is-flex is-flex-direction-row m-3">
-  <!-- <div hx-get="/menu" hx-swap="outerHTML" hx-trigger="load"></div> -->
+<div id="main-div" class="is-flex is-flex-direction-column m-3 ">
 
   {% match path_and_params %}
   {% when Some with ((path, params)) %}
+  <div class="is-flex is-flex-direction-row is-justify-content-space-between">
+      <button id="go-back-button"
+          class="button nav-button"
+          hx-swap-oob="outerHTML"
+          >
+      </button>
+          <h1 class="has-text-white has-text-weight-bold is-size-2"> Bureau </h1>
+      <div></div>
+  </div>
+
   <div
     hidden
     hx-push-url="true"
@@ -13,6 +22,11 @@
     hx-trigger="load once"
   ></div>
   {% when None %}
+  <div id="go-back-button"
+      class="button nav-button none"
+      hx-swap-oob="outerHTML"
+      >
+  </div>
   <div
       class="is-flex is-flex-direction-column">
       <h1 class="is-align-self-center">
@@ -22,7 +36,7 @@
       {% when Some with (env_names) %}
       <ul>
           {% for name in env_names %}
-          <li hx-get="{{name}}" hx-target="#main-div" hx-push-url="true" hx-swap="innerHTML">{{name}}</li>
+          <li hx-get="{{name}}" hx-target="#route-content" hx-select-oob="" hx-push-url="true" hx-swap="innerHTML">{{name}}</li>
       {% endfor %}
       </ul>
       {% when None %}
@@ -30,6 +44,8 @@
       {% endmatch %}
   </div>
 {% endmatch %}
-  <div id="route-content" class="container is-fluid"></div>
+
+
+  <div id="route-content" class=""></div>
 </div>
 {% endblock %}

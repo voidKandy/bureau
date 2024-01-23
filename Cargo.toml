@@ -21,6 +21,6 @@ once_cell = "1.18.0"
 askama = "0.12.1"
 tower-http = { version = "0.4.4", features = ['fs'] }
 nom = "7.1.3"
-espionox = {path = "../espx/lib"} 
+espionox = {path = "../Espionox"} 
 dotenv = "0.15.0"
 

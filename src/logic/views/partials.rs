@@ -57,7 +57,11 @@ pub async fn history(
                 tracing::info!("Got agent reference");
                 let messages: Vec<MessageRender> =
                     agent.cache.as_ref().iter().map(|m| m.into()).collect();
-                let history = ChatHistory { messages };
+                let history = ChatHistory {
+                    env_id,
+                    agent_id,
+                    messages,
+                };
                 return Html(history.render().unwrap());
             }
         }

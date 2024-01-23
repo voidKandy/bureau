@@ -1,26 +1,35 @@
+<button
+  class="button nav-button"
+  hx-swap-oob="outerHTML"
+  id="go-back-button"
+  hx-get="/{{parent_id}}"
+  hx-target="#route-content"
+  hx-push-url="true"
+></button>
 <div
   id="ws-connect"
-  class="chat-window py-2 pl-2 pr-5"
+  class="is-flex is-flex-direction-column"
   hx-ext="ws"
   ws-connect="/ws"
   _="on htmx:wsAfterMessage send getHistory to #chat-history end"
 >
-  <div class="container">
-    <div
-      id="chat-history"
-      hx-get="/{{parent_id}}/{{id}}/history"
-      hx-trigger="load, getHistory"
-      hx-swap="innerHTML"
-      hx-target="this"
-    ></div>
+  <div class="chat-window py-2 pl-2 pr-5">
+    <div class="container">
+      <div
+        id="chat-history"
+        hx-get="/{{parent_id}}/{{id}}/history"
+        hx-trigger="load, getHistory"
+        hx-swap="innerHTML"
+        hx-target="this"
+      ></div>
+    </div>
   </div>
-
   <form
     autocomplete="off"
     ws-send=""
     id="user-input-form"
     name="{{parent_id}}-{{ id }}-agent-form"
-    class="chat-form is-align-self-center is-flex is-flex-direction-row is-justify-content-center is-flex-shrink"
+    class="chat-form is-flex is-align-self-center is-flex-direction-row is-justify-content-center is-flex-shrink"
     hx-swap="none"
     hx-on="htmx:wsAfterSend: this.reset()"
   >

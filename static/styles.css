@@ -13,7 +13,7 @@
 .material-symbols-outlined {
   font-variation-settings:
     "FILL" 0,
-    "wght" 100,
+    "wght" 300,
     "GRAD" 20,
     "opsz" 20;
 }
@@ -42,21 +42,41 @@ body {
 
 .nav-button {
   font-family: "nova-mono", sans-serif;
-  border-radius: 0px;
-  border-style: none;
+  border: none;
+  left: 0;
   display: inline-block;
-  padding: 2px;
+  padding: 1px;
   cursor: pointer !important;
-  font-size: 3rem;
-  background-color: #191919;
+  font-size: 0.75rem;
+  background-color: transparent;
   color: white;
+  margin-right: 0.25rem;
+  align-self: center;
   transition: all ease-in-out 200ms;
+}
+
+.nav-button::after {
+  content: "⬅︎";
 }
 
 .nav-button:hover {
   border-radius: 1px;
-  background-color: white;
+  color: black;
+}
+
+.nav-button.none {
   color: #191919;
+  cursor: default !important;
+}
+
+.nav-button.none {
+  color: #191919;
+  cursor: default;
+}
+
+.nav-button.none::after {
+  color: #191919;
+  content: "⬅︎";
 }
 
 .basic-button {
