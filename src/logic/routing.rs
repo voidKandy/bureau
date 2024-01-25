@@ -40,6 +40,11 @@ fn init_env_routes() -> Router<SharedState> {
             "/:agent_id/message_change/:role/:content",
             patch(patches::message_change),
         )
+        .route("/:agent_id/add_message", patch(patches::add_message))
+        .route(
+            "/:agent_id/add_message_form",
+            get(patches::add_message_form),
+        )
 }
 
 fn init_ws_routes() -> Router<SharedState> {

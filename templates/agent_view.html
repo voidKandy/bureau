@@ -1,3 +1,18 @@
+<style>
+  .system-message-check {
+    font-size: 1.25rem;
+    color: white;
+  }
+
+  .system-message-check:hover {
+    cursor: pointer;
+  }
+
+  .system-message-check.checked {
+    color: yellow;
+  }
+</style>
+
 <button
   class="button nav-button"
   hx-swap-oob="outerHTML"
@@ -29,17 +44,20 @@
     ws-send=""
     id="user-input-form"
     name="{{parent_id}}-{{ id }}-agent-form"
-    class="chat-form is-flex is-align-self-center is-flex-direction-row is-justify-content-center is-flex-shrink"
+    class="mb-2 chat-form is-flex is-align-self-center is-flex-direction-row is-justify-content-center is-flex-shrink"
     hx-swap="none"
     hx-on="htmx:wsAfterSend: this.reset()"
   >
+    <div class="is-flex is-flex-direction-column is-align-self-center"></div>
     <input
-      class="input mx-2 mb-2 px-4 is-flex"
+      class="input px-3 mx-2 is-flex is-justify-self-center"
       type="text"
       name="user_input"
       placeholder="Type a message..."
       _="on load focus() me end"
     />
-    <button class="basic-button button is-flex mr-2">▶︎</button>
+    <button class="basic-button button is-flex mr-2 is-align-self-center">
+      ▶︎
+    </button>
   </form>
 </div>

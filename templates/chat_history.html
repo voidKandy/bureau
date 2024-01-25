@@ -39,41 +39,51 @@
     font-family: monospace;
   }
 
-  .edit-button {
+  .new-sys-message-button {
     background-color: transparent;
     color: white;
     border: none;
   }
 
-  .edit-button.off {
+  .new-sys-message-button:hover {
+    cursor: pointer;
+  }
+
+  .delete-button {
+    background-color: transparent;
+    color: white;
+    border: none;
+  }
+
+  .delete-button.off {
     color: #1c1c1c;
     cursor: default;
   }
 
-  .edit-button.off:hover {
+  .delete-button.off:hover {
     color: #1c1c1c;
     cursor: default;
   }
 
-  .edit-button:hover {
+  .delete-button:hover {
     color: yellow;
     cursor: pointer;
   }
 </style>
 
 <script type="text/hyperscript">
-  behavior ShowEditOnHover
+  behavior ShowDeleteOnHover
       on load
-          add .off to <button/> in me
-          add @disabled to <button/> in me
+          add .off to .delete-button in me
+          add @disabled to .delete-button in me
       end
       on mouseenter
-          remove .off from <button/> in me
-          remove @disabled from <button/> in me
+          remove .off from .delete-button in me
+          remove @disabled from .delete-button in me
       end
       on mouseleave
-          add .off to <button/> in me
-          add @disabled to <button/> in me
+          add .off to .delete-button in me
+          add @disabled to .delete-button in me
       end
   end
 </script>
@@ -134,7 +144,7 @@
 <script type="text/hyperscript"></script>
 <div
   class="is-flex is-flex-direction-row is-justify-content-space-between"
-  _="install ShowEditOnHover"
+  _="install ShowDeleteOnHover"
 >
   <h1 class="p-1 ws-message {{message.class}}" _="install MakeMessageEditable">
     {{message.content}}
@@ -142,7 +152,7 @@
   <div class="is-flex is-flex-direction-row">
     <h3 style="color: orange" class="is-size-7 is-align-self-center"></h3>
     <button
-      class="edit-button material-symbols-outlined is-size-4 has-text-weight-bold is-align-self-center"
+      class="delete-button material-symbols-outlined is-size-4 has-text-weight-bold is-align-self-center"
       hx-patch="/{{env_id}}/{{agent_id}}/message_change/{{message.role()}}/{{message.content}}?delete=true"
       hx-target="previous <h3/>"
       _="on htmx:afterRequest 
@@ -154,9 +164,19 @@
     </button>
   </div>
 </div>
+
 {% match message.markdown %} {% when Some with (md) %}
 <md-block>{{md}}</md-block>
 {% when None %} {% endmatch %} {% endfor %}
 
 <h1 id='"user-message"' class="p-1 ws-message user-message"></h1>
 <h1 id='"assistant-message"' class="p-1 ws-message assistant-message"></h1>
+
+<button
+  class="material-symbols-outlined new-sys-message-button"
+  hx-get="/{{env_id}}/{{agent_id}}/add_message_form"
+  hx-target="this"
+  hx-swap="outerHTML"
+>
+  add
+</button>
