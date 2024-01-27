@@ -37,7 +37,7 @@ fn init_env_routes() -> Router<SharedState> {
         .route("/:agent_id", get(views::partials::agent_view))
         .route("/:agent_id/history", get(views::partials::history))
         .route(
-            "/:agent_id/message_change/:role/:content",
+            "/:agent_id/message_change/:index",
             patch(patches::message_change),
         )
         .route("/:agent_id/add_message", patch(patches::add_message))
