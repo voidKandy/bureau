@@ -79,14 +79,15 @@
     end
     on keydown(event)
         if event.key == 'Enter'
-           send htmx:trigger to #user-input-form
+           if not event.shiftKey
+               event.preventDefault()
+               trigger submit on #user-input-form
+           end
         end
     end
     on keyup(event)
         if event.shiftKey
-            log 'isShift'
             if event.key == 'Enter'
-                log 'isEnter'
                send updateSize to me
             end
         end
