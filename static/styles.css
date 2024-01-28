@@ -24,7 +24,7 @@ body {
   font-family: "space-mono", sans-serif;
   /* background-image: radial-gradient(rgba(41, 0, 111, 0.75), black 120%); */
   min-height: 100vh;
-  overflow-y: hidden;
+  overflow-y: auto;
 }
 
 ::selection {
@@ -102,33 +102,4 @@ body {
   background-color: white;
   border-style: solid !important;
   border-color: #191919;
-}
-
-.chat-form {
-  position: fixed;
-  bottom: 0;
-  width: 40vw;
-}
-
-.chat-form input[type="text"] {
-  background-color: #191919 !important;
-  border-style: dashed;
-  border-radius: 2px;
-  color: white;
-}
-
-.chat-form input[type="text"]:focus {
-  border-style: solid;
-  border-color: white;
-}
-
-.chat-form input[type="text"]::placeholder {
-  color: #3a3a3a;
-}
-
-.chat-window {
-  height: auto;
-  /* Set a fixed height for the chat window */
-  overflow-y: auto;
-  /* Enable vertical scrolling */
 }

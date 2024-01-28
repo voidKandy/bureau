@@ -1,4 +1,8 @@
 <style>
+  .chat-window {
+    height: 100%;
+    overflow-y: scroll;
+  }
   .system-message-check {
     font-size: 1.25rem;
     color: white;
@@ -11,7 +15,98 @@
   .system-message-check.checked {
     color: yellow;
   }
+
+  #user-input-form {
+    position: fixed;
+    bottom: 0;
+    width: 45vw;
+    border-radius: 10px;
+    border-style: dashed;
+  }
+
+  #user-input-form.focused {
+    border-style: solid;
+  }
+
+  #user-input-form textarea {
+    background-color: #191919 !important;
+    resize: none;
+    border: none;
+    color: white;
+  }
+
+  #user-input-form textarea:focus {
+    outline: none !important;
+    box-shadow: none;
+    background-color: red;
+  }
+
+  #user-input-form textarea::-webkit-scrollbar {
+    display: none;
+  }
+
+  #user-input-form textarea::placeholder {
+    color: #3a3a3a;
+  }
+
+  #user-input-form button {
+    background-color: #191919;
+    border: none;
+    color: white;
+    transition: all ease-in-out 200ms;
+  }
+
+  #user-input-form button:hover {
+    cursor: pointer;
+    padding: 0.4em;
+    border-radius: 1px;
+    color: #191919;
+    background-color: white;
+  }
 </style>
+
+<script type="text/hyperscript">
+  behavior TextInputBox
+    on load
+        focus() me
+        set :initHeight to `${my scrollHeight}px`
+    end
+    on focus
+        add .focused to #user-input-form
+    end
+    on blur
+        remove .focused from #user-input-form
+    end
+    on keydown(event)
+        if event.key == 'Enter'
+           send htmx:trigger to #user-input-form
+        end
+    end
+    on keyup(event)
+        if event.shiftKey
+            log 'isShift'
+            if event.key == 'Enter'
+                log 'isEnter'
+               send updateSize to me
+            end
+        end
+       if event.key == 'Backspace'
+          send updateSize to me
+       end
+    end
+    on updateSize
+        if my value does not include '\n'
+            set my style.height to :initHeight
+        else
+            set my style.height to 'auto'
+            set :newHeight to `${my scrollHeight}px`
+            log :newHeight
+            set my style.height to :newHeight
+        end
+    end
+
+  end
+</script>
 
 <button
   class="button nav-button"
@@ -44,20 +139,16 @@
     ws-send=""
     id="user-input-form"
     name="{{parent_id}}-{{ id }}-agent-form"
-    class="mb-2 chat-form is-flex is-align-self-center is-flex-direction-row is-justify-content-center is-flex-shrink"
+    class="mb-2 is-flex is-align-self-center is-flex-direction-row is-justify-content-center is-flex-shrink"
     hx-swap="none"
     hx-on="htmx:wsAfterSend: this.reset()"
   >
-    <div class="is-flex is-flex-direction-column is-align-self-center"></div>
-    <input
+    <textarea
       class="input px-3 mx-2 is-flex is-justify-self-center"
-      type="text"
       name="user_input"
       placeholder="Type a message..."
-      _="on load focus() me end"
-    />
-    <button class="basic-button button is-flex mr-2 is-align-self-center">
-      ▶︎
-    </button>
+      _="install TextInputBox"
+    ></textarea>
+    <button class="is-flex mr-2 is-align-self-center">▶︎</button>
   </form>
 </div>

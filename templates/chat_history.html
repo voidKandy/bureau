@@ -35,7 +35,7 @@
   }
 
   md-block {
-    white-space: pre;
+    white-space: pre-wrap;
     font-family: monospace;
   }
 
@@ -88,7 +88,7 @@
   end
 </script>
 
-{% for (i,message) in messages.iter().enumerate() %}
+{% for message in messages %}
 
 <script type="text/hyperscript">
   behavior MakeMessageEditable
@@ -98,10 +98,12 @@
           send toggle to me
       end
       on keydown(event)
-          if event.key == 'Enter'
-            send blur to me
-            send changeMessage to me
-          end
+         if event.key == 'Enter'
+            if not event.shiftKey
+                send blur to me
+                send changeMessage to me
+            end
+         end
       end
       on keyup(event)
           set :content to my textContent
@@ -134,26 +136,26 @@
         set headers['Hx-Request'] to true
       end
       on changeMessage
-        fetch `/{{env_id}}/{{agent_id}}/message_change/{{i}}?change=${:content}` with method:"PATCH"
+        fetch `/{{env_id}}/{{agent_id}}/message_change/{{loop.index0}}?change=${:content}` with method:"PATCH"
         put the result into innerHTML of next <h3/>
         wait 3s then
         put "" into innerHTML of next <h3/>
       end
 </script>
-
 <script type="text/hyperscript"></script>
+
 <div
   class="is-flex is-flex-direction-row is-justify-content-space-between"
   _="install ShowDeleteOnHover"
 >
-  <h1 class="p-1 ws-message {{message.class}}" _="install MakeMessageEditable">
-    {{message.content}}
-  </h1>
+  <div class="p-1 ws-message {{message.class}}" _="install MakeMessageEditable">
+    {{message.content|safe}}
+  </div>
   <div class="is-flex is-flex-direction-row">
     <h3 style="color: orange" class="is-size-7 is-align-self-center"></h3>
     <button
       class="delete-button material-symbols-outlined is-size-4 has-text-weight-bold is-align-self-center"
-      hx-patch="/{{env_id}}/{{agent_id}}/message_change/{{i}}?delete=true"
+      hx-patch="/{{env_id}}/{{agent_id}}/message_change/{{loop.index0}}?delete=true"
       hx-target="previous <h3/>"
       _="on htmx:afterRequest 
             wait 3s then
@@ -165,12 +167,10 @@
   </div>
 </div>
 
-{% match message.markdown %} {% when Some with (md) %}
-<md-block>{{md}}</md-block>
-{% when None %} {% endmatch %} {% endfor %}
+{% endfor %}
 
-<h1 id='"user-message"' class="p-1 ws-message user-message"></h1>
-<h1 id='"assistant-message"' class="p-1 ws-message assistant-message"></h1>
+<div id='"user-message"' class="p-1 ws-message user-message"></div>
+<div id='"assistant-message"' class="p-1 ws-message assistant-message"></div>
 
 <button
   class="material-symbols-outlined new-sys-message-button"

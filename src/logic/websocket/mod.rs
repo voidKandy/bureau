@@ -8,7 +8,6 @@ use axum::{
     },
     response::{Html, IntoResponse},
 };
-use axum_htmx::HxCurrentUrl;
 use espionox::environment::{
     agent::{
         language_models::openai::gpt::streaming_utils::CompletionStreamStatus,
@@ -17,6 +16,9 @@ use espionox::environment::{
     dispatch::ThreadSafeStreamCompletionHandler,
 };
 use futures::{sink::SinkExt, stream::StreamExt};
+use markdown::to_html;
+
+use self::models::UserMessage;
 
 #[derive(Debug, Clone, PartialEq)]
 enum WsRequest {
@@ -33,20 +35,6 @@ impl TryFrom<serde_json::Value> for WsRequest {
                 user_input: user_input.to_string().replace('"', ""),
             }),
             None => Err(anyhow::anyhow!("No user input field")),
-        }
-    }
-}
-
-impl WsRequest {
-    fn try_into_html(&self) -> Option<Html<String>> {
-        match self {
-            Self::PromptAgent { user_input } => {
-                let template = models::UserMessage {
-                    content: user_input,
-                };
-                Some(Html(template.render().unwrap()))
-            }
-            Self::Empty => None,
         }
     }
 }
@@ -143,11 +131,14 @@ async fn websocket(stream: WebSocket, state: SharedState) {
                 ws_message,
                 ws_hx_trigger
             );
-
-            if let Some(msg) = ws_message.try_into_html() {
-                tracing::info!("Sending message back to client: {:?}", msg);
+            let user_message_option: Option<UserMessage> = (&ws_message).try_into().ok();
+            if let Some(msg) = user_message_option {
+                tracing::info!(
+                    "Sending user message back to client: {}",
+                    msg.render().unwrap()
+                );
                 // Should also send an indicator in the assistant-message
-                let _ = tx.send(msg);
+                let _ = tx.send(Html(msg.render().unwrap()));
             }
 
             match ws_message {
@@ -190,11 +181,10 @@ async fn websocket(stream: WebSocket, state: SharedState) {
                                 CompletionStreamStatus::Working(token) => {
                                     whole_message.push_str(&token);
 
-                                    let tmplt = models::AssistantMessage {
-                                        content: &whole_message,
-                                    };
+                                    let tmplt =
+                                        models::AssistantMessage::from(whole_message.as_str());
                                     tracing::info!(
-                                        "Sending message back to client: {}",
+                                        "Sending assistant message back to client: {}",
                                         tmplt.render().unwrap()
                                     );
 
