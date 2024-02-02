@@ -5,7 +5,7 @@
   {% when Some with ((path, params)) %}
   <div class="is-flex is-flex-direction-row is-justify-content-space-between">
       <button id="go-back-button"
-          class="button nav-button"
+          class="nav-button"
           hx-swap-oob="outerHTML"
           >
       </button>
@@ -23,7 +23,7 @@
   ></div>
   {% when None %}
   <div id="go-back-button"
-      class="button nav-button none"
+      class="nav-button none"
       hx-swap-oob="outerHTML"
       >
   </div>
@@ -34,7 +34,10 @@
       </h1>
       {% match environment_names %}
       {% when Some with (env_names) %}
-      <ul>
+      <h1>
+          Environments:
+      </h1>
+      <ul class="choice-list">
           {% for name in env_names %}
           <li hx-get="{{name}}" hx-target="#route-content" hx-select-oob="" hx-push-url="true" hx-swap="innerHTML">{{name}}</li>
       {% endfor %}

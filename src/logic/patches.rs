@@ -8,7 +8,7 @@ use axum::{
     Form,
 };
 use axum_htmx::HxCurrentUrl;
-use espionox::environment::agent::memory::{Message, MessageMetadata, MessageRole};
+use espionox::environment::agent::memory::{Message, MessageRole};
 use serde::Deserialize;
 
 use crate::{views::models::MessageRender, SharedState};
@@ -38,7 +38,6 @@ pub async fn add_message(
             let message = Message {
                 role,
                 content: add_message.content,
-                metadata: MessageMetadata::default(),
             };
             agent.cache.push(message);
         }
@@ -71,7 +70,6 @@ pub async fn message_change(
                             let new_message = Message {
                                 role: origin_message.role.clone(),
                                 content: change.to_owned(),
-                                metadata: origin_message.metadata.clone(),
                             };
 
                             *origin_message = new_message;

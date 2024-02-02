@@ -1,5 +1,5 @@
 <button
-  class="button nav-button"
+  class="nav-button"
   hx-swap-oob="outerHTML"
   id="go-back-button"
   hx-get="/"
@@ -7,21 +7,25 @@
   hx-push-url="true"
 ></button>
 
-<div class="is-flex is-flex-direction-column">
-  <h1>You are currently in the {{ id }} environment</h1>
+<div class="is-flex is-flex-direction-column m-3">
+  <h1 class="is-align-self-center">
+    You are currently in the {{ id }} environment
+  </h1>
   <div class="is-flex is-flex-direction-row">
     <div>
       <h1>Agents:</h1>
-      {% for a_name in agent_names %}
-      <h2
-        hx-get="{{id}}/{{a_name}}"
-        hx-replace-url="true"
-        hx-target="#route-content"
-        hx-swap="innerHTML"
-      >
-        {{a_name}}
-      </h2>
-      {% endfor %}
+      <ul class="choice-list">
+        {% for a_name in agent_names %}
+        <li
+          hx-get="{{id}}/{{a_name}}"
+          hx-replace-url="true"
+          hx-target="#route-content"
+          hx-swap="innerHTML"
+        >
+          {{a_name}}
+        </li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
 </div>
