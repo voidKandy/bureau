@@ -3,6 +3,7 @@
     height: 100%;
     overflow-y: scroll;
   }
+
   .system-message-check {
     font-size: 1.25rem;
     color: white;
@@ -133,6 +134,16 @@
         hx-swap="innerHTML"
         hx-target="this"
       ></div>
+
+      <button
+        id="new-message-button"
+        class="material-symbols-outlined little-button"
+        hx-get="/{{parent_id}}/{{id}}/add_message_form"
+        hx-target="this"
+        hx-swap="outerHTML"
+      >
+        add
+      </button>
     </div>
   </div>
   <form

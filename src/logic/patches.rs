@@ -41,7 +41,8 @@ pub async fn add_message(
             };
             agent.cache.push(message);
         }
-        return Html(String::from("Added message"));
+
+        return add_message_form(Path((env_id, agent_id))).await;
     }
     return Html(String::from("Invalid envirnoment name in request!"));
 }

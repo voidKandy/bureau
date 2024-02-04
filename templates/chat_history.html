@@ -2,6 +2,11 @@
   .ws-message {
     color: white;
     text-shadow: 0 0 3px #c8c8c8;
+    background-color: #191919;
+  }
+  .ws-message pre {
+    text-shadow: none;
+    background-color: #191919;
   }
 
   .system-message {
@@ -39,13 +44,13 @@
     font-family: monospace;
   }
 
-  .new-sys-message-button {
+  .little-button {
     background-color: transparent;
     color: white;
     border: none;
   }
 
-  .new-sys-message-button:hover {
+  .little-button:hover {
     cursor: pointer;
   }
 
@@ -71,6 +76,7 @@
   }
 </style>
 
+<script src="/static/prism.js"></script>
 <script type="text/hyperscript">
   behavior ShowDeleteOnHover
       on load
@@ -107,7 +113,6 @@
       end
       on keyup(event)
           set :content to my textContent
-          log :content
       end
       on toggle
           if :editable
@@ -142,7 +147,6 @@
         put "" into innerHTML of next <h3/>
       end
 </script>
-<script type="text/hyperscript"></script>
 
 <div
   class="is-flex is-flex-direction-row is-justify-content-space-between"
@@ -171,12 +175,3 @@
 
 <div id='"user-message"' class="p-1 ws-message user-message"></div>
 <div id='"assistant-message"' class="p-1 ws-message assistant-message"></div>
-
-<button
-  class="material-symbols-outlined new-sys-message-button"
-  hx-get="/{{env_id}}/{{agent_id}}/add_message_form"
-  hx-target="this"
-  hx-swap="outerHTML"
->
-  add
-</button>

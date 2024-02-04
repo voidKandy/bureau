@@ -2,10 +2,6 @@
   class="is-flex is-flex-direction-row"
   hx-patch="/{{env_id}}/{{agent_id}}/add_message"
   hx-target="this"
-  _="on htmx:afterRequest 
-            wait 2s then
-            reload() the location of the window
-          end"
 >
   <select
     class="has-text-white"
@@ -22,12 +18,29 @@
     style="background-color: #191919; border: 1px dotted white; width: 50%"
     type="text"
     name="content"
+    autocomplete="off"
     placeholder="Type a message..."
     _="on load focus() me end"
   />
   <button
-    class="material-symbols-outlined new-sys-message-button is-flex mr-2 is-align-self-center"
+    id="add-message"
+    class="material-symbols-outlined little-button is-flex mr-2 is-align-self-center"
+    _="on htmx:beforeCleanupElement 
+            wait 200ms then
+            send getHistory to #chat-history
+          end"
   >
     add
+  </button>
+  <button
+    id="close-button"
+    class="material-symbols-outlined little-button is-flex mr-2 is-align-self-center"
+    hx-get="/{{env_id}}/{{agent_id}}"
+    hx-select="#new-message-button"
+    hx-swap="outerHTML"
+    hx-target="closest <form/>"
+    hx-trigger="click, close"
+  >
+    close
   </button>
 </form>

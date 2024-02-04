@@ -1,4 +1,25 @@
 {% extends "index.html" %} {% block layout %}
+<style>
+    .env-container {
+        transition: all ease-in-out 30ms;
+        font-size: 3rem;
+    }
+
+    .env-container.char-hover {
+        font-weight: 900;
+        font-size: 3.5rem;
+    }
+
+    .env-char {
+        transition: all ease-in-out 80ms;
+    }
+    .env-char:hover {
+        text-shadow: 3px 5px grey;
+        font-size: 3.6rem;
+        cursor: pointer;
+    }
+</style>
+
 <div id="main-div" class="is-flex is-flex-direction-column m-3 ">
 
   {% match path_and_params %}
@@ -9,7 +30,9 @@
           hx-swap-oob="outerHTML"
           >
       </button>
-          <h1 class="has-text-white has-text-weight-bold is-size-2"> Bureau </h1>
+          <h1 class=" has-text-weight-bold "
+              style="color: #FFFDD0; font-size: 4rem;"
+              > Bureau </h1>
       <div></div>
   </div>
 
@@ -29,22 +52,37 @@
   </div>
   <div
       class="is-flex is-flex-direction-column">
-      <h1 class="is-align-self-center">
+      <h1 class="is-align-self-center"
+          >
           Please pick an environment
       </h1>
-      {% match environment_names %}
-      {% when Some with (env_names) %}
-      <h1>
-          Environments:
-      </h1>
-      <ul class="choice-list">
-          {% for name in env_names %}
-          <li hx-get="{{name}}" hx-target="#route-content" hx-select-oob="" hx-push-url="true" hx-swap="innerHTML">{{name}}</li>
-      {% endfor %}
-      </ul>
-      {% when None %}
-      <h1> You have no environments </h1>
-      {% endmatch %}
+      <div>
+          {% match environment_names %}
+          {% when Some with (env_names) %}
+          <ul class="choice-list ">
+              {% for name in env_names %}
+              <li _="
+                  on mouseenter from .env-char
+                    add .char-hover to me 
+                  end 
+                  on mouseleave from .env-char
+                    remove .char-hover from me
+                  end
+                  "class="env-container"  hx-target="#route-content" hx-select-oob="" hx-push-url="true" hx-swap="innerHTML">
+                  <div class='is-flex is-flex-direction-row is-justify-content-center' style="height: 4rem;">
+                  {% for char in name.chars() %}
+                  <h1 class='env-char'  hx-get="{{name}}">
+                      {{char}}
+                  </h1>
+                  {% endfor %}
+                  </div>
+              </li>
+          {% endfor %}
+          </ul>
+          {% when None %}
+          <h1> You have no environments </h1>
+          {% endmatch %}
+      </div>
   </div>
 {% endmatch %}
 

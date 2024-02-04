@@ -110,14 +110,7 @@ body {
 }
 
 .choice-list li {
-  cursor: pointer;
   color: white;
-  border-style: none none dashed none;
-  display: inline-flexbox;
+  display: inline-block;
   box-sizing: content-box;
-  transition: all ease-in-out 250ms;
-}
-
-.choice-list li:hover {
-  border-style: none none solid none;
 }
