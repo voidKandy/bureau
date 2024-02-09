@@ -23,6 +23,7 @@
     width: 45vw;
     border-radius: 10px;
     border-style: dashed;
+    background-color: #191919 !important;
   }
 
   #user-input-form.focused {
@@ -82,7 +83,9 @@
         if event.key == 'Enter'
            if not event.shiftKey
                event.preventDefault()
-               trigger submit on #user-input-form
+               if my value is not ''
+                   trigger submit on #user-input-form
+               end
            end
         end
     end
