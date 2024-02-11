@@ -23,4 +23,5 @@ tower-http = { version = "0.4.4", features = ['fs'] }
 espionox = {path = "../Espionox"} 
 dotenv = "0.15.0"
 markdown = "0.3.0"
+surrealdb = "1.1.1"
 

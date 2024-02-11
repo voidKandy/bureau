@@ -71,6 +71,9 @@ async fn main() {
 
     Lazy::force(&TRACING);
 
+    let _ = logic::database::connect().await;
+    logic::database::test_get().await.unwrap();
+
     let (tx, _rx) = broadcast::channel(100);
     let mut env = AppState::init_default_env();
     let agent_handles = AppState::insert_default_agents(&mut env).await;
