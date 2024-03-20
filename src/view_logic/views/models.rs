@@ -1,5 +1,5 @@
 use askama::Template;
-use espionox::environment::agent::memory::{Message, MessageRole};
+use espionox::agents::memory::{Message, MessageRole};
 use markdown::to_html;
 use serde::{Deserialize, Serialize};
 
@@ -26,8 +26,8 @@ pub struct EnvView<'a> {
 #[derive(Template)]
 #[template(path = "agent_view.html")]
 pub struct AgentView<'a> {
-    pub id: &'a str,
-    pub parent_id: &'a str,
+    pub agent_id: &'a str,
+    pub env_id: &'a str,
 }
 
 #[derive(Template)]

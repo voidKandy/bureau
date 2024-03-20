@@ -1,13 +1,7 @@
-use super::models::{IndexTemplate, LayoutTemplate};
-use crate::{AppState, SharedState};
+use super::models::LayoutTemplate;
+use crate::SharedState;
 use askama::Template;
-use axum::{
-    extract::{Path, Query, State},
-    response::Html,
-};
-use axum_htmx::HxCurrentUrl;
-use espionox::environment::Environment;
-use std::collections::HashMap;
+use axum::{extract::State, response::Html};
 
 pub async fn index(State(state): State<SharedState>) -> Html<String> {
     let state_read = state.read().await;

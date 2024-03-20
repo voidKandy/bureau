@@ -7,7 +7,6 @@ use crate::{
 };
 
 use askama::Template;
-use axum::extract::{Path, Query};
 use axum::{
     http::Request,
     middleware::{self, Next},
