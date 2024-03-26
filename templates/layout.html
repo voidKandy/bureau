@@ -1,24 +1,16 @@
 {% extends "index.html" %} {% block layout %}
 <style>
-    .env-container {
-        transition: all ease-in-out 30ms;
-        font-size: 3rem;
-    }
-
-    .env-container.char-hover {
-        font-weight: 900;
-        font-size: 3.5rem;
-    }
-
-    .env-char {
-        transition: all ease-in-out 80s;
-    }
-    .env-char:hover {
-        text-shadow: 3px 5px grey;
-        font-size: 3.6rem;
-        cursor: pointer;
-    }
+  .choice-list li {
+    font-size: 2.8rem;
+    cursor: pointer;
+    transition: all ease-in 90ms;
+  }
+  .choice-list li:hover {
+    font-size: 3.2rem;
+    cursor: pointer;
+  }
 </style>
+
 
 <div id="main-div" class="is-flex is-flex-direction-column m-3 ">
 
@@ -54,33 +46,25 @@
       class="is-flex is-flex-direction-column">
       <h1 class="is-align-self-center"
           >
-          Please pick an environment
+          Please pick an Agent 
       </h1>
       <div>
-          {% match environment_names %}
-          {% when Some with (env_names) %}
+          {% match agent_names %}
+          {% when Some with (a_names) %}
           <ul class="choice-list ">
-              {% for name in env_names %}
-              <li _="
-                  on mouseenter from .env-char
-                    add .char-hover to me 
-                  end 
-                  on mouseleave from .env-char
-                    remove .char-hover from me
-                  end
-                  "class="env-container"  hx-target="#route-content" hx-select-oob="" hx-push-url="true" hx-swap="innerHTML">
-                  <div class='is-flex is-flex-direction-row is-justify-content-center' style="height: 4rem;">
-                  {% for char in name.chars() %}
-                  <h1 class='env-char'  hx-get="{{name}}">
-                      {{char}}
-                  </h1>
-                  {% endfor %}
-                  </div>
-              </li>
+              {% for name in a_names %}
+                <li
+                  hx-get="{{name}}"
+                  hx-replace-url="true"
+                  hx-target="#route-content"
+                  hx-swap="innerHTML"
+                >
+                  {{name}}
+                </li>
           {% endfor %}
           </ul>
           {% when None %}
-          <h1> You have no environments </h1>
+          <h1> You have no agents </h1>
           {% endmatch %}
       </div>
   </div>

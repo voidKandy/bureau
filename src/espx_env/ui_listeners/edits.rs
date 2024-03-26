@@ -1,22 +1,18 @@
+use std::{
+    collections::VecDeque,
+    sync::{Arc, RwLock},
+};
+
 use espionox::{
-    agents::memory::{Message, MessageRole, MessageStack},
+    agents::memory::{Message, MessageStack},
     environment::dispatch::{EnvListener, EnvMessage, EnvRequest},
 };
-use tokio::sync::mpsc::Receiver;
 
+#[derive(Debug)]
 pub enum StackEdit {
-    EditMessageInCache {
-        idx: usize,
-        // old_text: &'u str,
-        new_text: String,
-    },
-    RemoveMessageInCache {
-        idx: usize,
-        // text: String,
-    },
-    PushMessageToCache {
-        message: Message,
-    },
+    EditMessageInCache { idx: usize, new_text: String },
+    RemoveMessageInCache { idx: usize },
+    PushMessageToCache { message: Message },
 }
 
 impl StackEdit {
@@ -25,27 +21,19 @@ impl StackEdit {
             Self::PushMessageToCache { message } => {
                 cache.push(message);
             }
-            Self::EditMessageInCache {
-                idx,
-                // old_text,
-                new_text,
-            } => {
+            Self::EditMessageInCache { idx, new_text } => {
                 if let Some(m) = cache.as_mut().iter_mut().nth(idx) {
-                    // if m.content == old_text {
                     m.content = new_text.to_string();
-                    // }
                 }
             }
-            Self::RemoveMessageInCache {
-                idx,
-                // text
-            } => {
+            Self::RemoveMessageInCache { idx } => {
                 cache.as_mut().remove(idx);
             }
         }
     }
 }
 
+#[derive(Debug)]
 pub struct CacheEdit {
     pub agent_id: String,
     pub edit: StackEdit,
@@ -53,12 +41,14 @@ pub struct CacheEdit {
 
 #[derive(Debug)]
 pub struct EditCacheListener {
-    receiver: Receiver<CacheEdit>,
+    shared_cache_changes: Arc<RwLock<VecDeque<CacheEdit>>>,
 }
 
 impl EditCacheListener {
-    pub fn new(receiver: Receiver<CacheEdit>) -> Self {
-        Self { receiver }
+    pub fn new(shared_cache_changes: Arc<RwLock<VecDeque<CacheEdit>>>) -> Self {
+        Self {
+            shared_cache_changes,
+        }
     }
 }
 
@@ -85,7 +75,9 @@ impl EnvListener for EditCacheListener {
         dispatch: &'l mut espionox::environment::dispatch::Dispatch,
     ) -> espionox::environment::dispatch::listeners::ListenerMethodReturn {
         Box::pin(async move {
-            while let Some(change) = self.receiver.recv().await {
+            let mut cache = self.shared_cache_changes.write().unwrap();
+
+            while let Some(change) = cache.pop_front() {
                 if let Some(agent) = dispatch.get_agent_mut(&change.agent_id).ok() {
                     change.edit.make_edit(&mut agent.cache);
                 }

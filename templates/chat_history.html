@@ -141,7 +141,7 @@
         set headers['Hx-Request'] to true
       end
       on changeMessage
-        fetch `/{{env_id}}/{{agent_id}}/message_change/{{loop.index0}}?change=${:content}` with method:"PATCH"
+        fetch `/{{agent_id}}/message_change/{{loop.index0}}?change=${:content}` with method:"PATCH"
         put the result into innerHTML of next <h3/>
         wait 3s then
         put "" into innerHTML of next <h3/>
@@ -159,7 +159,7 @@
     <h3 style="color: orange" class="is-size-7 is-align-self-center"></h3>
     <button
       class="delete-button material-symbols-outlined is-size-4 has-text-weight-bold is-align-self-center"
-      hx-patch="/{{env_id}}/{{agent_id}}/message_change/{{loop.index0}}?delete=true"
+      hx-patch="/{{agent_id}}/message_change/{{loop.index0}}?delete=true"
       hx-target="previous <h3/>"
       _="on htmx:afterRequest 
             wait 3s then

@@ -1,8 +1,12 @@
+use std::{
+    collections::HashMap,
+    sync::{Arc, RwLock},
+};
+
 use espionox::{
     agents::memory::MessageStack,
     environment::dispatch::{EnvListener, EnvMessage, EnvNotification},
 };
-use tokio::sync::mpsc::Sender;
 
 pub struct CacheChanged {
     pub(super) agent_id: String,
@@ -10,12 +14,14 @@ pub struct CacheChanged {
 }
 #[derive(Debug)]
 pub struct CacheChangeListener {
-    sender: Sender<CacheChanged>,
+    shared_cache_states: Arc<RwLock<HashMap<String, MessageStack>>>,
 }
 
 impl CacheChangeListener {
-    pub fn new(sender: Sender<CacheChanged>) -> Self {
-        Self { sender }
+    pub fn new(shared_cache_states: Arc<RwLock<HashMap<String, MessageStack>>>) -> Self {
+        Self {
+            shared_cache_states,
+        }
     }
 }
 
@@ -29,6 +35,7 @@ impl EnvListener for CacheChangeListener {
         }
         None
     }
+    #[tracing::instrument(name = "CacheChange Listener Method")]
     fn method<'l>(
         &'l mut self,
         trigger_message: espionox::environment::dispatch::EnvMessage,
@@ -41,13 +48,10 @@ impl EnvListener for CacheChangeListener {
                 ..
             }) = trigger_message
             {
-                self.sender
-                    .send(CacheChanged {
-                        agent_id: agent_id.to_owned(),
-                        cache: cache.to_owned(),
-                    })
-                    .await
-                    .expect("Failed to send cache change");
+                tracing::info!("Agent: {}", agent_id);
+                let mut caches = self.shared_cache_states.write().unwrap();
+                caches.insert(agent_id.to_owned(), cache.clone());
+                tracing::info!("Sent update");
                 return Ok(trigger_message);
             }
 

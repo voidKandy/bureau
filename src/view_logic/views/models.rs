@@ -12,28 +12,19 @@ pub struct IndexTemplate;
 pub struct LayoutTemplate<'a> {
     // pub path: &'a str,
     // pub params: &'a str,
-    pub environment_names: Option<Vec<String>>,
+    pub agent_names: Option<Vec<String>>,
     pub path_and_params: Option<(&'a str, &'a str)>,
-}
-
-#[derive(Template)]
-#[template(path = "env_view.html")]
-pub struct EnvView<'a> {
-    pub id: &'a str,
-    pub agent_names: Vec<String>,
 }
 
 #[derive(Template)]
 #[template(path = "agent_view.html")]
 pub struct AgentView<'a> {
     pub agent_id: &'a str,
-    pub env_id: &'a str,
 }
 
 #[derive(Template)]
 #[template(path = "chat_history.html")]
 pub struct ChatHistory {
-    pub env_id: String,
     pub agent_id: String,
     pub messages: Vec<MessageRender>,
 }

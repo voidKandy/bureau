@@ -28,24 +28,29 @@ pub struct AddMessage {
 
 pub async fn add_message(
     State(state): State<SharedState>,
-    Path((env_id, agent_id)): Path<(String, String)>,
+    Path(agent_id): Path<String>,
     Form(add_message): Form<AddMessage>,
 ) -> Html<String> {
-    let mut state_write = state.write().await;
-    if let Some(env) = state_write.environments_map.get_mut(&env_id) {
-        if let Some(sender) = env.ui_channel.get_agent_edit_sender(&agent_id) {
-            let message = Message {
-                role: add_message.role.into(),
-                content: add_message.content,
-            };
-            let edit = StackEdit::PushMessageToCache { message };
-            sender.send(CacheEdit { agent_id, edit }).await.unwrap();
+    let state_write = state.write().await;
+    let message = Message {
+        role: add_message.role.try_into().unwrap(),
+        content: add_message.content,
+    };
+    let edit = CacheEdit {
+        agent_id,
+        edit: StackEdit::PushMessageToCache { message },
+    };
+    state_write
+        .env_state
+        .ui_handler
+        .cache_changes
+        .write()
+        .unwrap()
+        .push_back(edit);
 
-            return Html(String::from("Cache Updated!"));
-        }
-        return add_message_form(Path((env_id, agent_id))).await;
-    }
-    return Html(String::from("Invalid envirnoment name in request!"));
+    return Html(String::from("Cache Updated!"));
+
+    // return add_message_form(Path((env_id, agent_id))).await;
 }
 
 pub async fn add_message_form(Path((env_id, agent_id)): Path<(String, String)>) -> Html<String> {
@@ -58,30 +63,44 @@ pub async fn add_message_form(Path((env_id, agent_id)): Path<(String, String)>) 
 
 pub async fn message_change(
     State(state): State<SharedState>,
-    Path((env_id, agent_id, idx)): Path<(String, String, usize)>,
+    Path((_, agent_id, idx)): Path<(String, String, usize)>,
     Query(params): Query<HashMap<String, String>>,
 ) -> Html<String> {
-    let mut state_write = state.write().await;
-    if let Some(env) = state_write.environments_map.get_mut(&env_id) {
-        if let Some(sender) = env.ui_channel.get_agent_edit_sender(&agent_id) {
-            if let Some(new_text) = params.get("change") {
-                let edit = StackEdit::EditMessageInCache {
-                    idx,
-                    new_text: new_text.to_string(),
-                };
-                sender.send(CacheEdit { agent_id, edit }).await.unwrap();
+    let state_write = state.write().await;
+    if let Some(new_text) = params.get("change") {
+        let edit = CacheEdit {
+            agent_id,
+            edit: StackEdit::EditMessageInCache {
+                idx,
+                new_text: new_text.to_string(),
+            },
+        };
 
-                return Html(String::from("Cache Updated!"));
-            }
-            if let Some(delete) = params.get("delete") {
-                if delete == "true" {
-                    let edit = StackEdit::RemoveMessageInCache { idx };
-                    sender.send(CacheEdit { agent_id, edit }).await.unwrap();
-                    return Html(String::from("Message Deleted!"));
-                }
-            }
-        }
-        return Html(String::from("No sender for that agent"));
+        state_write
+            .env_state
+            .ui_handler
+            .cache_changes
+            .write()
+            .unwrap()
+            .push_back(edit);
+
+        return Html(String::from("Cache Updated!"));
     }
-    return Html(String::from("No env"));
+    if let Some(delete) = params.get("delete") {
+        if delete == "true" {
+            let edit = CacheEdit {
+                agent_id,
+                edit: StackEdit::RemoveMessageInCache { idx },
+            };
+            state_write
+                .env_state
+                .ui_handler
+                .cache_changes
+                .write()
+                .unwrap()
+                .push_back(edit);
+            return Html(String::from("Message Deleted!"));
+        }
+    }
+    return Html(String::from("No sender for that agent"));
 }

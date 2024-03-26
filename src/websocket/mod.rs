@@ -26,7 +26,7 @@ enum WsRequest {
 #[derive(Debug)]
 struct WsHxTrigger {
     agent_id: String,
-    env_id: String,
+    // env_id: String,
 }
 
 struct WsRequestHandler {
@@ -50,13 +50,17 @@ impl WsHxTrigger {
     fn try_from_trigger_and_name(hx_trigger: String, hx_trigger_name: String) -> Option<Self> {
         match hx_trigger.as_str() {
             "user-input-form" => {
-                if let Some(env_and_agent_id) = hx_trigger_name.strip_suffix("-agent-form") {
-                    if let Some((env_id, agent_id)) = env_and_agent_id
-                        .split_once('-')
-                        .and_then(|(e, a)| Some((e.to_owned(), a.to_owned())))
-                    {
-                        return Some(Self { agent_id, env_id });
-                    }
+                if let Some(agent_id) = hx_trigger_name.strip_suffix("-agent-form") {
+                    // if let Some(, agent_id)) = env_and_agent_id
+                    //     .split_once('-')
+                    //     .and_then(|(e, a)| Some((e.to_owned(), a.to_owned())))
+                    // {
+                    //     return Some(Self { agent_id, env_id });
+                    // }
+
+                    return Some(Self {
+                        agent_id: agent_id.to_owned(),
+                    });
                 }
                 None
             }
@@ -106,55 +110,57 @@ impl WsRequestHandler {
     async fn handle(self, mut state: RwLockWriteGuard<'_, AppState>, tx: Sender<Html<String>>) {
         match self.req {
             WsRequest::PromptAgent { user_input } => {
-                if let Some(env_state) = state.environments_map.get_mut(&self.trigger.env_id) {
-                    if !env_state.has_handle() {
-                        env_state.spawn();
-                    }
+                if !state.env_state.has_handle() {
+                    state.env_state.spawn().unwrap();
+                }
 
-                    let ticket = {
-                        let agent_handle = env_state
-                            .get_agent_handle(&self.trigger.agent_id)
-                            .expect("Couldn't get agent handle");
+                let ticket = {
+                    let agent_handle = state
+                        .env_state
+                        .get_agent_handle(&self.trigger.agent_id)
+                        .expect("Couldn't get agent handle");
 
-                        agent_handle
-                            .request_stream_completion(espionox::agents::memory::Message::new_user(
-                                &user_input,
-                            ))
-                            .await
-                            .expect("Why did I fail to request a stream handle?")
-                    };
-
-                    let env_handle = env_state.env_handle().expect("Why can't I get env handle?");
-
-                    let noti = env_handle
-                        .wait_for_notification(&ticket)
+                    agent_handle
+                        .request_stream_completion(espionox::agents::memory::Message::new_user(
+                            &user_input,
+                        ))
                         .await
-                        .expect("Why did I not get Noti?");
+                        .expect("Why did I fail to request a stream handle?")
+                };
 
-                    let stream: &ThreadSafeStreamCompletionHandler =
-                        noti.extract_body().try_into().unwrap();
-                    let mut stream = stream.lock().await;
+                let env_handle = state
+                    .env_state
+                    .env_handle()
+                    .expect("Why can't I get env handle?");
 
-                    let mut whole_message = String::new();
-                    while let Some(status) = stream
-                        .receive(&self.trigger.agent_id, env_handle.new_sender())
-                        .await
-                    {
-                        match status {
-                            CompletionStreamStatus::Working(token) => {
-                                whole_message.push_str(&token);
+                let noti = env_handle
+                    .wait_for_notification(&ticket)
+                    .await
+                    .expect("Why did I not get Noti?");
 
-                                let tmplt = models::AssistantMessage::from(whole_message.as_str());
-                                tracing::info!(
-                                    "Sending assistant message back to client: {}",
-                                    tmplt.render().unwrap()
-                                );
+                let stream: &ThreadSafeStreamCompletionHandler =
+                    noti.extract_body().try_into().unwrap();
+                let mut stream = stream.lock().await;
 
-                                let _ = tx.send(Html(tmplt.render().unwrap()));
-                            }
-                            CompletionStreamStatus::Finished => {
-                                tracing::info!("Finished completion stream")
-                            }
+                let mut whole_message = String::new();
+                while let Some(status) = stream
+                    .receive(&self.trigger.agent_id, env_handle.new_sender())
+                    .await
+                {
+                    match status {
+                        CompletionStreamStatus::Working(token) => {
+                            whole_message.push_str(&token);
+
+                            let tmplt = models::AssistantMessage::from(whole_message.as_str());
+                            tracing::info!(
+                                "Sending assistant message back to client: {}",
+                                tmplt.render().unwrap()
+                            );
+
+                            let _ = tx.send(Html(tmplt.render().unwrap()));
+                        }
+                        CompletionStreamStatus::Finished => {
+                            tracing::info!("Finished completion stream")
                         }
                     }
                 }

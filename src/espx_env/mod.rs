@@ -9,14 +9,12 @@ use espionox::{
     language_models::{ModelProvider, LLM},
 };
 
-use self::ui_listeners::UiListenerChannel;
-
-pub type EnvStatesMap = HashMap<String, EnvironmentState>;
+use self::ui_listeners::UiListenerHandler;
 
 #[derive(Debug)]
 pub struct EnvironmentState {
     pub env: Environment,
-    pub ui_channel: UiListenerChannel,
+    pub ui_handler: UiListenerHandler,
     agent_handles: HashMap<String, AgentHandle>,
     handle: Option<EnvHandle>,
 }
@@ -50,7 +48,7 @@ impl EnvironmentState {
             tup_vec.push((id.to_owned(), a.cache.clone()));
         }
 
-        let mut ui_channel = UiListenerChannel::new(tup_vec).await;
+        let mut ui_handler = UiListenerHandler::new(tup_vec).await;
         let mut agent_handles = HashMap::new();
 
         let mut env = default_env();
@@ -58,14 +56,14 @@ impl EnvironmentState {
             let h = env.insert_agent(Some(id), a).await?;
             agent_handles.insert(id.to_string(), h);
         }
-        ui_channel
+        ui_handler
             .insert_my_listeners(&mut env)
             .await
             .expect("Couldn't insert UI listeners");
 
         Ok(Self {
             env,
-            ui_channel,
+            ui_handler,
             handle: None,
             agent_handles,
         })

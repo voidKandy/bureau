@@ -1,6 +1,6 @@
 <form
   class="is-flex is-flex-direction-row"
-  hx-patch="/{{env_id}}/{{agent_id}}/add_message"
+  hx-patch="/{{agent_id}}/add_message"
   hx-target="this"
 >
   <select
@@ -35,7 +35,7 @@
   <button
     id="close-button"
     class="material-symbols-outlined little-button is-flex mr-2 is-align-self-center"
-    hx-get="/{{env_id}}/{{agent_id}}"
+    hx-get="/{{agent_id}}"
     hx-select="#new-message-button"
     hx-swap="outerHTML"
     hx-target="closest <form/>"

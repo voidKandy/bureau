@@ -117,7 +117,7 @@
   class="nav-button"
   hx-swap-oob="outerHTML"
   id="go-back-button"
-  hx-get="/{{env_id}}"
+  hx-get="/"
   hx-target="#route-content"
   hx-push-url="true"
 ></button>
@@ -132,7 +132,7 @@
     <div class="container">
       <div
         id="chat-history"
-        hx-get="/{{env_id}}/{{agent_id}}/history"
+        hx-get="/{{agent_id}}/history"
         hx-trigger="load, getHistory"
         hx-swap="innerHTML"
         hx-target="this"
@@ -141,7 +141,7 @@
       <button
         id="new-message-button"
         class="material-symbols-outlined little-button"
-        hx-get="/{{env_id}}/{{agent_id}}/add_message_form"
+        hx-get="/{{agent_id}}/add_message_form"
         hx-target="this"
         hx-swap="outerHTML"
       >
@@ -153,7 +153,7 @@
     autocomplete="off"
     ws-send=""
     id="user-input-form"
-    name="{{env_id}}-{{ agent_id }}-agent-form"
+    name="{{ agent_id }}-agent-form"
     class="mb-2 is-flex is-align-self-center is-flex-direction-row is-justify-content-center is-flex-shrink"
     hx-swap="none"
     hx-on="htmx:wsAfterSend: this.reset()"
