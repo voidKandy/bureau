@@ -11,7 +11,7 @@ use axum::{
     http::Request,
     middleware::{self, Next},
     response::{Html, IntoResponse, Response},
-    routing::{get, patch},
+    routing::{delete, get, patch},
     Router,
 };
 use axum_htmx::extractors::HxRequest;
@@ -34,6 +34,7 @@ fn init_agent_routes() -> Router<SharedState> {
         .route("/", get(views::partials::agent_view))
         .route("/history", get(views::partials::history))
         .route("/message_change/:index", patch(patches::message_change))
+        .route("/message_delete/:index", delete(patches::message_delete))
         .route("/add_message", patch(patches::add_message))
         .route("/add_message_form", get(patches::add_message_form))
 }

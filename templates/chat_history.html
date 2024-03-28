@@ -149,7 +149,7 @@
 </script>
 
 <div
-  class="is-flex is-flex-direction-row is-justify-content-space-between"
+  class="whole-message is-flex is-flex-direction-row is-justify-content-space-between"
   _="install ShowDeleteOnHover"
 >
   <div class="p-1 ws-message {{message.class}}" _="install MakeMessageEditable">
@@ -159,11 +159,11 @@
     <h3 style="color: orange" class="is-size-7 is-align-self-center"></h3>
     <button
       class="delete-button material-symbols-outlined is-size-4 has-text-weight-bold is-align-self-center"
-      hx-patch="/{{agent_id}}/message_change/{{loop.index0}}?delete=true"
+      hx-delete="/{{agent_id}}/message_delete/{{loop.index0}}"
       hx-target="previous <h3/>"
       _="on htmx:afterRequest 
-            wait 3s then
-            reload() the location of the window
+            wait 500ms then
+            remove closest <div.whole-message/>
           end"
     >
       close

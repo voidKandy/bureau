@@ -57,7 +57,7 @@ impl EnvironmentState {
             agent_handles.insert(id.to_string(), h);
         }
         ui_handler
-            .insert_my_listeners(&mut env)
+            .insert_my_listener(&mut env)
             .await
             .expect("Couldn't insert UI listeners");
 
