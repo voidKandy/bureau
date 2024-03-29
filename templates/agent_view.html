@@ -32,6 +32,7 @@
 
   #user-input-form textarea {
     background-color: #191919 !important;
+    font-family: "space-mono";
     resize: none;
     border: none;
     color: white;
@@ -54,16 +55,15 @@
   #user-input-form button {
     background-color: #191919;
     border: none;
-    color: white;
+    color: #fffdd0;
     transition: all ease-in-out 200ms;
   }
 
   #user-input-form button:hover {
     cursor: pointer;
-    padding: 0.4em;
     border-radius: 1px;
     color: #191919;
-    background-color: white;
+    background-color: #fffdd0;
   }
 </style>
 
@@ -98,6 +98,10 @@
        if event.key == 'Backspace'
           send updateSize to me
        end
+    end
+    on paste
+      wait 20ms
+      send updateSize to me
     end
     on updateSize
         if my value does not include '\n'

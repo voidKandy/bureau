@@ -58,6 +58,7 @@ impl MessageRender {
 }
 
 impl From<&Message> for MessageRender {
+    #[tracing::instrument(name = "Converting from EspxMessage to MessageRender")]
     fn from(m: &Message) -> Self {
         let mut class = String::new();
         class.push_str({
@@ -67,11 +68,13 @@ impl From<&Message> for MessageRender {
                 _ => "system-message",
             }
         });
+
         let content = to_html(&m.content);
+        let sani = content.replace("\\n", "<br>");
 
         Self {
             class,
-            content: content.to_string(),
+            content: sani,
         }
     }
 }
