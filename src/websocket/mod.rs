@@ -15,6 +15,7 @@ use espionox::{
 };
 use futures::{sink::SinkExt, stream::StreamExt};
 use tokio::sync::{broadcast::Sender, RwLockWriteGuard};
+use tracing::{debug, info};
 
 #[derive(Debug, Clone, PartialEq)]
 enum WsRequest {
@@ -209,6 +210,7 @@ async fn websocket(stream: WebSocket, state: SharedState) {
 
     let mut recv_task = tokio::spawn(async move {
         while let Some(Ok(message)) = receiver.next().await {
+            debug!("MESSAGE RECIEVED BY WS: {:?}", message);
             let state_write = state.write().await;
             let tx = state_write.tx.clone();
 
