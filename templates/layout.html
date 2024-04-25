@@ -1,76 +1,61 @@
 {% extends "index.html" %} {% block layout %}
 <style>
-  .choice-list li {
-    font-size: 2.8rem;
-    cursor: pointer;
-    transition: all ease-in 90ms;
-  }
-  .choice-list li:hover {
-    font-size: 3.2rem;
-    cursor: pointer;
-  }
+    .choice-list li {
+        text-align: center;
+        display: inline-block;
+    }
+
+    .choice-list li h1 {
+        display: inline-block;
+        font-size: 2.8rem;
+        cursor: pointer;
+        transition: all ease-in 90ms;
+    }
+
+    .choice-list li h1:hover {
+        font-size: 3.2rem;
+    }
 </style>
 
 
 <div id="main-div" class="is-flex is-flex-direction-column m-3 ">
 
-  {% match path_and_params %}
-  {% when Some with ((path, params)) %}
-  <div class="is-flex is-flex-direction-row is-justify-content-space-between">
-      <button id="go-back-button"
-          class="nav-button"
-          hx-swap-oob="outerHTML"
-          >
-      </button>
-          <h1 class=" has-text-weight-bold "
-              style="color: #FFFDD0; font-size: 4rem;"
-              > Bureau </h1>
-      <div></div>
-  </div>
+    {% match path_and_params %}
+    {% when Some with ((path, params)) %}
+    <div class="is-flex is-flex-direction-row is-justify-content-space-between">
+        <button id="go-back-button" class="nav-button" hx-swap-oob="outerHTML">
+        </button>
+        <h1 class=" has-text-weight-bold " style="color: #FFFDD0; font-size: 4rem;"> Bureau </h1>
+        <div></div>
+    </div>
 
-  <div
-    hidden
-    hx-push-url="true"
-    hx-target="#route-content"
-    hx-get="{{ path }}?{{ params }}"
-    hx-swap="innerHTML"
-    hx-trigger="load once"
-  ></div>
-  {% when None %}
-  <div id="go-back-button"
-      class="nav-button none"
-      hx-swap-oob="outerHTML"
-      >
-  </div>
-  <div
-      class="is-flex is-flex-direction-column">
-      <h1 class="is-align-self-center"
-          >
-          Please pick an Agent 
-      </h1>
-      <div>
-          {% match agent_names %}
-          {% when Some with (a_names) %}
-          <ul class="choice-list ">
-              {% for name in a_names %}
-                <li
-                  hx-get="{{name}}"
-                  hx-replace-url="true"
-                  hx-target="#route-content"
-                  hx-swap="innerHTML"
-                >
-                  {{name}}
+    <div hidden hx-push-url="true" hx-target="#route-content" hx-get="{{ path }}?{{ params }}" hx-swap="innerHTML"
+        hx-trigger="load once"></div>
+    {% when None %}
+    <div id="go-back-button" class="nav-button none" hx-swap-oob="outerHTML">
+    </div>
+    <div class="is-flex is-flex-direction-column">
+        <h1 class="is-align-self-center">
+            Please pick an Agent
+        </h1>
+        <div>
+            {% match agent_names %}
+            {% when Some with (a_names) %}
+            <ul class="choice-list ">
+                {% for name in a_names %}
+                <li hx-get="{{name}}" hx-replace-url="true" hx-target="#route-content" hx-swap="innerHTML">
+                    <h1> {{name}} </h1>
                 </li>
-          {% endfor %}
-          </ul>
-          {% when None %}
-          <h1> You have no agents </h1>
-          {% endmatch %}
-      </div>
-  </div>
-{% endmatch %}
+                {% endfor %}
+            </ul>
+            {% when None %}
+            <h1> You have no agents </h1>
+            {% endmatch %}
+        </div>
+    </div>
+    {% endmatch %}
 
 
-  <div id="route-content" class=""></div>
+    <div id="route-content" class=""></div>
 </div>
 {% endblock %}

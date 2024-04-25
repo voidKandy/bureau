@@ -1,18 +1,20 @@
-use std::collections::HashMap;
-
+use crate::{
+    espx_env::ui_listeners::{CacheEdit, StackEdit},
+    SharedState,
+};
 use askama::Template;
 use axum::{
     extract::{Path, Query, State},
     response::Html,
     Form,
 };
-use espionox::agents::memory::Message;
-use serde::Deserialize;
-
-use crate::{
-    espx_env::ui_listeners::{CacheEdit, StackEdit},
-    SharedState,
+use espionox::{
+    agents::{memory::Message, Agent},
+    language_models::LLM,
 };
+use serde::Deserialize;
+use std::collections::HashMap;
+
 #[derive(Template)]
 #[template(path = "add_message_form.html")]
 pub struct AddMessageForm<'a> {

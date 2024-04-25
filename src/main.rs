@@ -1,4 +1,3 @@
-pub mod database;
 pub mod espx_env;
 pub mod routing;
 pub mod state;

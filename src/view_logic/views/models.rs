@@ -10,8 +10,6 @@ pub struct IndexTemplate;
 #[derive(Template)]
 #[template(path = "layout.html")]
 pub struct LayoutTemplate<'a> {
-    // pub path: &'a str,
-    // pub params: &'a str,
     pub agent_names: Option<Vec<String>>,
     pub path_and_params: Option<(&'a str, &'a str)>,
 }
